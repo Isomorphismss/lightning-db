@@ -3,7 +3,6 @@
 **Lightning Database** is a minimal, modular database engine designed for learning and experimentation. This project is currently in its early development stage.
 
 ![meme](./assets/ptf.png)
----
 
 ## Project Overview
 
@@ -13,8 +12,6 @@ The architecture is built around a **socket-based client-server model**:
 
 - **Frontend (Client)**: Reads user input (SQL statements), sends them to the server, displays the response, and waits for the next input.
 - **Backend (Server)**: Parses and executes SQL, communicates results back to the client.
-
----
 
 ## Planned Features
 
@@ -27,8 +24,6 @@ This project is under active development. The following features are part of the
 - [ ] Deadlock detection and handling
 - [ ] Simple table and field definitions (DDL support)
 - [ ] Data durability and crash recovery
-
----
 
 ## Backend Module Plan
 
@@ -43,8 +38,6 @@ The backend will be composed of five loosely coupled modules:
 | **Table Manager (TBM)**      | Table metadata and schema management          |
 
 Each module will expose a clean interface and interact with others through abstraction.
-
----
 
 ## License
 
