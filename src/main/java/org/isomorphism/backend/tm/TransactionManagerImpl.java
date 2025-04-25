@@ -112,6 +112,19 @@ public class TransactionManagerImpl implements TransactionManager {
         }
     }
 
+    // 检查xid事务是否处于status状态
+    private boolean checkXID(long xid, byte status) {
+        long offset = getXidPosition(xid);
+        ByteBuffer buf = ByteBuffer.wrap(new byte[XID_FIELD_SIZE]);
+        try {
+            fc.position(offset);
+            fc.read(buf);
+        } catch (IOException e) {
+            Panic.panic(e);
+        }
+        return buf.array()[0] == status;
+    }
+
     // 开始一个事务，返回xid
     @Override
     public long begin() {
@@ -128,27 +141,36 @@ public class TransactionManagerImpl implements TransactionManager {
 
     @Override
     public void commit(long xid) {
-
+        updateXID(xid, FIELD_TRAN_COMMITTED);
     }
 
     @Override
     public void abort(long xid) {
-
+        updateXID(xid, FIELD_TRAN_ABORTED);
     }
 
     @Override
     public boolean isActive(long xid) {
-        return false;
+        if (xid == SUPER_XID) {
+            return false;
+        }
+        return checkXID(xid, FIELD_TRAN_ACTIVE);
     }
 
     @Override
     public boolean isCommitted(long xid) {
-        return false;
+        if (xid == SUPER_XID) {
+            return false;
+        }
+        return checkXID(xid, FIELD_TRAN_COMMITTED);
     }
 
     @Override
     public boolean isAborted(long xid) {
-        return false;
+        if (xid == SUPER_XID) {
+            return false;
+        }
+        return checkXID(xid, FIELD_TRAN_ABORTED);
     }
 
     @Override
