@@ -1,5 +1,14 @@
 package org.isomorphism.backend.tm;
 
+import org.isomorphism.backend.utils.Panic;
+import org.isomorphism.common.Error;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+
 public interface TransactionManager {
 
     long begin();
@@ -16,6 +25,41 @@ public interface TransactionManager {
 
     void close();
 
+    public static TransactionManager create(String path) {
+        File f = new File(path + TransactionManagerImpl.XID_SUFFIX);
 
+        try {
+            if (!f.createNewFile()) {
+                Panic.panic(Error.FileExistsException);
+            }
+        } catch (IOException e) {
+            Panic.panic(e);
+        }
+
+        if (!f.canRead() || !f.canWrite()) {
+            Panic.panic(Error.FileCannotRWException);
+        }
+
+        FileChannel fc = null;
+        RandomAccessFile raf = null;
+
+        try {
+            raf = new RandomAccessFile(f, "rw");
+            fc = raf.getChannel();
+        } catch (IOException e) {
+            Panic.panic(e);
+        }
+
+        ByteBuffer buf = ByteBuffer.wrap(new byte[TransactionManagerImpl.LEN_XID_HEADER_LENGTH]);
+
+        try {
+            fc.position(0);
+            fc.write(buf);
+        } catch (IOException e) {
+            Panic.panic(e);
+        }
+
+        return new TransactionManagerImpl(raf, fc);
+    }
 
 }
