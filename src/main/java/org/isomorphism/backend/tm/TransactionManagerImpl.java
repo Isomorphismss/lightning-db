@@ -175,7 +175,12 @@ public class TransactionManagerImpl implements TransactionManager {
 
     @Override
     public void close() {
-
+        try {
+            fc.close();
+            file.close();
+        } catch (IOException e) {
+            Panic.panic(e);
+        }
     }
 
 }
