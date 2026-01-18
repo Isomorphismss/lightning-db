@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C C:/Users/alway/Desktop/Projects/lightning-db log --oneline -20)",
+      "Bash(mvn:*)",
+      "Bash(java:*)"
+    ]
+  }
+}
